@@ -1,7 +1,9 @@
 // Vercel Workflows for multi-step AI operations
 // Based on OSS Data Analyst patterns for safe database access
 
-import { workflow } from '@vercel/workflows';
+import { z } from 'zod';
+// Note: Vercel Workflows syntax may vary - this is a conceptual structure
+// Refer to latest Vercel Workflows documentation for exact syntax
 
 // ===========================================
 // INVOICE PROCESSING WORKFLOW
@@ -209,4 +211,5 @@ async function updateDashboardCache(businessId: string, metrics: any) {
   // Update dashboard cache with new metrics
 }
 
-import { z } from 'zod';
+// Note: Actual Vercel Workflows implementation requires @vercel/workflows package
+// This is a conceptual structure showing the workflow pattern

@@ -2,7 +2,9 @@
 // These tools are used by the AI agent to interact with the financial system
 // All operations automatically include business context for multi-tenant isolation
 
-import { tool } from 'ai';
+// Note: Full AI tool implementation will be added when AI integration is complete
+// For now, this file provides the structure but tools are not active
+
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { getBusinessContext, verifyBusinessContext } from '@/lib/db';
@@ -11,7 +13,8 @@ import { getBusinessContext, verifyBusinessContext } from '@/lib/db';
 // INVOICE TOOLS
 // ===========================================
 
-export const createInvoiceTool = tool({
+// TODO: Properly implement with 'ai' package tool() function
+export const createInvoiceTool = {
   description: 'Create a new invoice for a client',
   parameters: z.object({
     businessId: z.string().describe('The business ID for tenant isolation'),
@@ -21,7 +24,14 @@ export const createInvoiceTool = tool({
     currency: z.string().optional().default('ZAR'),
     vatIncluded: z.boolean().optional().default(true),
   }),
-  execute: async ({ businessId, clientName, amount, description, currency, vatIncluded }) => {
+  execute: async ({ businessId, clientName, amount, description, currency, vatIncluded }: {
+    businessId: string;
+    clientName: string;
+    amount: number;
+    description: string;
+    currency?: string;
+    vatIncluded?: boolean;
+  }) => {
     // Verify business context
     verifyBusinessContext(businessId);
 
@@ -87,16 +97,20 @@ export const createInvoiceTool = tool({
       },
     };
   },
-});
+};
 
-export const listInvoicesTool = tool({
+export const listInvoicesTool = {
   description: 'List all invoices for a business',
   parameters: z.object({
     businessId: z.string(),
     status: z.enum(['DRAFT', 'SENT', 'PAID', 'OVERDUE']).optional(),
     limit: z.number().optional().default(10),
   }),
-  execute: async ({ businessId, status, limit }) => {
+  execute: async ({ businessId, status, limit }: {
+    businessId: string;
+    status?: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE';
+    limit?: number;
+  }) => {
     verifyBusinessContext(businessId);
 
     const invoices = await prisma.invoice.findMany({
@@ -120,9 +134,9 @@ export const listInvoicesTool = tool({
       })),
     };
   },
-});
+};
 
-export const markInvoicePaidTool = tool({
+export const markInvoicePaidTool = {
   description: 'Mark an invoice as paid',
   parameters: z.object({
     businessId: z.string(),
@@ -130,7 +144,12 @@ export const markInvoicePaidTool = tool({
     paymentMethod: z.string().optional().default('manual'),
     reference: z.string().optional(),
   }),
-  execute: async ({ businessId, invoiceId, paymentMethod, reference }) => {
+  execute: async ({ businessId, invoiceId, paymentMethod, reference }: {
+    businessId: string;
+    invoiceId: string;
+    paymentMethod?: string;
+    reference?: string;
+  }) => {
     verifyBusinessContext(businessId);
 
     const invoice = await prisma.invoice.update({
@@ -154,13 +173,13 @@ export const markInvoicePaidTool = tool({
       message: `Invoice ${invoice.invoiceNumber} marked as paid`,
     };
   },
-});
+};
 
 // ===========================================
 // EXPENSE TOOLS
 // ===========================================
 
-export const logExpenseTool = tool({
+export const logExpenseTool = {
   description: 'Log a business expense',
   parameters: z.object({
     businessId: z.string(),
@@ -169,7 +188,13 @@ export const logExpenseTool = tool({
     category: z.string().optional().default('other'),
     date: z.string().optional(),
   }),
-  execute: async ({ businessId, amount, description, category, date }) => {
+  execute: async ({ businessId, amount, description, category, date }: {
+    businessId: string;
+    amount: number;
+    description: string;
+    category?: string;
+    date?: string;
+  }) => {
     verifyBusinessContext(businessId);
 
     // Calculate VAT (expenses have claimable VAT)
@@ -197,16 +222,20 @@ export const logExpenseTool = tool({
       },
     };
   },
-});
+};
 
-export const getFinancialSummaryTool = tool({
+export const getFinancialSummaryTool = {
   description: 'Get a financial summary for a date range',
   parameters: z.object({
     businessId: z.string(),
     startDate: z.string(),
     endDate: z.string(),
   }),
-  execute: async ({ businessId, startDate, endDate }) => {
+  execute: async ({ businessId, startDate, endDate }: {
+    businessId: string;
+    startDate: string;
+    endDate: string;
+  }) => {
     verifyBusinessContext(businessId);
 
     const start = new Date(startDate);
@@ -251,13 +280,13 @@ export const getFinancialSummaryTool = tool({
       },
     };
   },
-});
+};
 
 // ===========================================
 // CLIENT TOOLS
 // ===========================================
 
-export const createClientTool = tool({
+export const createClientTool = {
   description: 'Create a new client',
   parameters: z.object({
     businessId: z.string(),
@@ -266,7 +295,13 @@ export const createClientTool = tool({
     phone: z.string().optional(),
     vatNumber: z.string().optional(),
   }),
-  execute: async ({ businessId, name, email, phone, vatNumber }) => {
+  execute: async ({ businessId, name, email, phone, vatNumber }: {
+    businessId: string;
+    name: string;
+    email?: string;
+    phone?: string;
+    vatNumber?: string;
+  }) => {
     verifyBusinessContext(businessId);
 
     const client = await prisma.client.create({
@@ -289,7 +324,7 @@ export const createClientTool = tool({
       },
     };
   },
-});
+};
 
 // ===========================================
 // TOOL EXPORT

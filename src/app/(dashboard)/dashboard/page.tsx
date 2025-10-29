@@ -84,7 +84,7 @@ export default function DashboardPage() {
         />
         <StatCard
           title="Unpaid Invoices"
-          value={stats.unpaidInvoices}
+          value={stats.unpaidInvoices.toString()}
           icon={Users}
           trend={`R${(stats.unpaidInvoices * 10000).toLocaleString()}`}
           trendUp={false}
