@@ -23,17 +23,25 @@ export default function ExpensesPage() {
 
   const fetchExpenses = async () => {
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/expenses');
-      // const data = await response.json();
+      // Get business ID from context (in production, from auth)
+      const businessId = 'temp-business-id'; // TODO: Get from auth context
       
-      // Mock data
-      setExpenses([
-        { id: '1', description: 'Office supplies', amount: 5000, category: 'office', date: '2024-01-15', vatAmount: 750 },
-        { id: '2', description: 'Software subscription', amount: 2000, category: 'software', date: '2024-01-18', vatAmount: 300 },
-      ]);
+      const response = await fetch(`/api/expenses?businessId=${businessId}`);
+      if (!response.ok) throw new Error('Failed to fetch expenses');
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setExpenses(data.expenses.map((exp: any) => ({
+          ...exp,
+          date: new Date(exp.date).toISOString().split('T')[0],
+        })));
+      } else {
+        setExpenses([]);
+      }
     } catch (error) {
       console.error('Error fetching expenses:', error);
+      setExpenses([]);
     } finally {
       setLoading(false);
     }

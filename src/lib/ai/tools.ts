@@ -163,8 +163,8 @@ export const markInvoicePaidTool = {
       data: {
         invoiceId,
         amount: invoice.items.reduce((sum, item) => sum + Number(item.unitPrice), 0),
-        method: paymentMethod,
-        reference,
+        method: paymentMethod || 'manual',
+        reference: reference || null,
       },
     });
 
@@ -205,7 +205,7 @@ export const logExpenseTool = {
         businessId,
         amount,
         description,
-        category,
+        category: category || 'other',
         vatAmount,
         date: date ? new Date(date) : new Date(),
       },

@@ -24,18 +24,23 @@ export default function InvoicesPage() {
 
   const fetchInvoices = async () => {
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/invoices');
-      // const data = await response.json();
+      // Get business ID from context (in production, from auth)
+      const businessId = 'temp-business-id'; // TODO: Get from auth context
       
-      // Mock data
-      setInvoices([
-        { id: '1', invoiceNumber: 'INV-001', clientName: 'ABC Corp', amount: 15000, status: 'PAID', createdAt: '2024-01-15' },
-        { id: '2', invoiceNumber: 'INV-002', clientName: 'XYZ Ltd', amount: 25000, status: 'SENT', createdAt: '2024-01-18' },
-        { id: '3', invoiceNumber: 'INV-003', clientName: 'Tech Startup', amount: 8000, status: 'OVERDUE', createdAt: '2024-01-10' },
-      ]);
+      const response = await fetch(`/api/invoices?businessId=${businessId}`);
+      if (!response.ok) throw new Error('Failed to fetch invoices');
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setInvoices(data.invoices);
+      } else {
+        // Fallback to empty array if API fails
+        setInvoices([]);
+      }
     } catch (error) {
       console.error('Error fetching invoices:', error);
+      setInvoices([]);
     } finally {
       setLoading(false);
     }

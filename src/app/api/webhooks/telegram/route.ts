@@ -86,13 +86,9 @@ async function processMessage(businessId: string, userMessage: string) {
   // Set business context for all database operations
   setBusinessContext({ businessId });
 
-  // Use AI with financial tools to process the message
-  // Note: This is a simplified implementation - full AI integration would require
-  // proper OpenAI client setup with the 'ai' package. For now, returning a placeholder response.
-  // TODO: Implement full AI integration with proper model configuration
-  
-  // Placeholder response - replace with actual AI processing
-  const responseText = `I received your message: "${userMessage}". The full AI integration with business ID ${businessId} will be implemented here.`;
+  // Use complete AI integration
+  const { processAIMessage } = await import('@/lib/ai/processor');
+  const responseText = await processAIMessage(businessId, userMessage);
 
   return { text: responseText };
 }

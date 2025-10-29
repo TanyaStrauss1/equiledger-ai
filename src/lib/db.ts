@@ -26,13 +26,19 @@ export interface BusinessContext {
 const contextStore = new Map<number, BusinessContext>();
 
 export function setBusinessContext(context: BusinessContext) {
-  const threadId = typeof threadId !== 'undefined' ? Number(process.threadId) : 0;
+  // Use a simple counter or hash for context identification
+  // In production, this would use proper thread-local storage or request context
+  const threadId = typeof process !== 'undefined' && 'threadId' in process 
+    ? Number(process.threadId) 
+    : Math.floor(Math.random() * 1000000);
   contextStore.set(threadId, context);
 }
 
 export function getBusinessContext(): BusinessContext | null {
-  const threadId = typeof threadId !== 'undefined' ? Number(process.threadId) : 0;
-  return contextStore.get(threadId) ?? null;
+  // Get the most recent context (simplified - in production use proper request context)
+  if (contextStore.size === 0) return null;
+  // Return the last added context
+  return Array.from(contextStore.values())[contextStore.size - 1];
 }
 
 // ===========================================
